@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
  */
 class Revision extends Eloquent
 {
+
     /**
      * @var string
      */

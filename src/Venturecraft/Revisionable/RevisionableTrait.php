@@ -13,6 +13,21 @@
  */
 trait RevisionableTrait
 {
+	/**
+	 * @fork-modification jakub-klapka/revisionable
+	 */
+	/**
+	 * Model of Revison
+	 *
+	 * This model should extend \Venturecraft\Revisionable\Revision
+	 */
+	protected static function getRevisionModelPath() {
+		return '\Venturecraft\Revisionable\Revision';
+	}
+	/**
+	 * /@fork-modification
+	 */
+
     /**
      * @var array
      */
@@ -45,6 +60,17 @@ trait RevisionableTrait
      */
     protected $dirtyData = array();
 
+	/**
+	 * Keeps track, if we already bound trait to events
+	 *
+	 * If we have another trait, which uses this one, Laravel will reslove both in Model::bootTraits, thus calling
+	 * bootRevisionableTrait two times - which leads to duplicated revisions each save.
+	 *
+	 * @fork-modification jakub-klapka/revisionable
+	 * @var bool
+	 */
+	private static $eventsAlreadyBound = false;
+
     /**
      * Ensure that the bootRevisionableTrait is called only
      * if the current installation is a laravel 4 installation
@@ -67,6 +93,15 @@ trait RevisionableTrait
      */
     public static function bootRevisionableTrait()
     {
+	    /**
+	     * @fork-modification jakub-klapka/revisionable
+	     */
+    	if( static::$eventsAlreadyBound === true ) return;
+    	static::$eventsAlreadyBound = true;
+	    /**
+	     * /@fork-modification
+	     */
+
         static::saving(function ($model) {
             $model->preSave();
         });
@@ -90,7 +125,13 @@ trait RevisionableTrait
      */
     public function revisionHistory()
     {
-        return $this->morphMany('\Venturecraft\Revisionable\Revision', 'revisionable');
+	    /**
+	     * @fork-modification jakub-klapka/revisionable
+	     */
+        return $this->morphMany(static::getRevisionModelPath(), 'revisionable');
+	    /**
+	     * /@fork-modification
+	     */
     }
 
     /**
@@ -102,8 +143,14 @@ trait RevisionableTrait
      */
     public static function classRevisionHistory($limit = 100, $order = 'desc')
     {
-        return \Venturecraft\Revisionable\Revision::where('revisionable_type', get_called_class())
+	    /**
+	     * @fork-modification jakub-klapka/revisionable
+	     */
+        return app()->make( static::getRevisionModelPath() )->where('revisionable_type', get_called_class())
             ->orderBy('updated_at', $order)->limit($limit)->get();
+	    /**
+	     * /@fork-modification
+	     */
     }
 
     /**
@@ -194,7 +241,13 @@ trait RevisionableTrait
                         $delete->delete();
                     }
                 }
-                $revision = new Revision;
+	            /**
+	             * @fork-modification jakub-klapka/revisionable
+	             */
+                $revision = app()->make( static::getRevisionModelPath() );
+	            /**
+	             * /@fork-modification
+	             */
                 \DB::table($revision->getTable())->insert($revisions);
                 \Event::fire('revisionable.saved', array('model' => $this, 'revisions' => $revisions));
             }
@@ -228,7 +281,13 @@ trait RevisionableTrait
                 'updated_at' => new \DateTime(),
             );
 
-            $revision = new Revision;
+	        /**
+	         * @fork-modification jakub-klapka/revisionable
+	         */
+            $revision = app()->make( static::getRevisionModelPath() );
+	        /**
+	         * /@fork-modification
+	         */
             \DB::table($revision->getTable())->insert($revisions);
             \Event::fire('revisionable.created', array('model' => $this, 'revisions' => $revisions));
         }
@@ -254,7 +313,13 @@ trait RevisionableTrait
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
             );
-            $revision = new \Venturecraft\Revisionable\Revision;
+	        /**
+	         * @fork-modification jakub-klapka/revisionable
+	         */
+            $revision = app()->make( static::getRevisionModelPath() );
+	        /**
+	         * /@fork-moficiation
+	         */
             \DB::table($revision->getTable())->insert($revisions);
             \Event::fire('revisionable.deleted', array('model' => $this, 'revisions' => $revisions));
         }

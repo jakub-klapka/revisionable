@@ -3,11 +3,15 @@
     "license": "MIT",
     "description": "Keep a revision history for your models without thinking, created as a package for use with Laravel",
     "keywords": ["model", "laravel", "ardent", "revision", "history"],
-    "homepage": "http://github.com/venturecraft/revisionable",
+    "homepage": "https://github.com/jakub-klapka/revisionable",
     "authors": [
         {
             "name": "Chris Duell",
             "email": "me@chrisduell.com"
+        },
+        {
+            "name": "Jakub Klapka",
+            "email": "klapka@lumiart.cz"
         }
     ],
     "support": {
