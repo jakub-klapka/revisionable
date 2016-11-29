@@ -245,10 +245,17 @@ trait RevisionableTrait
 	             * @fork-modification jakub-klapka/revisionable
 	             */
                 $revision = app()->make( static::getRevisionModelPath() );
+
+	            foreach ( $revisions as $revision_attrs ) {
+		            $revision = app()->make( static::getRevisionModelPath() );
+		            $revision->forceFill( $revision_attrs );
+		            $revision->save();
+                }
+
+	            //\DB::table($revision->getTable())->insert($revisions);
 	            /**
 	             * /@fork-modification
 	             */
-                \DB::table($revision->getTable())->insert($revisions);
                 \Event::fire('revisionable.saved', array('model' => $this, 'revisions' => $revisions));
             }
         }
@@ -285,10 +292,17 @@ trait RevisionableTrait
 	         * @fork-modification jakub-klapka/revisionable
 	         */
             $revision = app()->make( static::getRevisionModelPath() );
+
+	        foreach ( $revisions as $revision_attrs ) {
+		        $revision = app()->make( static::getRevisionModelPath() );
+		        $revision->forceFill( $revision_attrs );
+		        $revision->save();
+	        }
+
+	        //\DB::table($revision->getTable())->insert($revisions);
 	        /**
 	         * /@fork-modification
 	         */
-            \DB::table($revision->getTable())->insert($revisions);
             \Event::fire('revisionable.created', array('model' => $this, 'revisions' => $revisions));
         }
 
